@@ -33,7 +33,7 @@ findin(x::AbstractRange, y) = _findin(x, y)
 
 function _find_first_in(x, y)
     out = 1
-    if is_forward(x) & is_forward(y)
+    if (step(x) > 0) & (step(y) > 0)
         for x_i in x
             idx = find_firsteq(x_i, y)
             if !isa(idx, Nothing)
@@ -55,7 +55,7 @@ end
 
 function _find_last_in(x, y)
     out = 0
-    if is_forward(x) & is_forward(y)
+    if (step(x) > 0) & (step(y) > 0)
         for x_i in reverse(x)
             idx = find_firsteq(x_i, y)
             if !isa(idx, Nothing)
@@ -96,7 +96,7 @@ _findin(x::AbstractUnitRange, y::AbstractUnitRange) = _findin(promote(x, y)...)
 
 # TODO this needs to be optimized for ranges
 function _findin(x, y)
-    if is_forward(x) && is_forward(y)
+    if (step(x) > 0) & (step(y) > 0)
         return Base._sortedfindin(y, x)
     else
         ind  = Vector{eltype(keys(y))}()

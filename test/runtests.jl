@@ -1,7 +1,15 @@
 # TODO this requires OffsetArrays
-using Test, ChainedFix, Finders
+using Test
+using ChainedFixes
+using Finders
+using Dates
+using OffsetArrays
+using OffsetArrays: IdOffsetRange
 
 using Base: OneTo
+
+catch_nothing(x) = x
+catch_nothing(x::Nothing) = 0
 
 @noinline function find_first_tests(x, collection)
     @testset "find first test - $x, $(typeof(collection))" begin
@@ -78,24 +86,19 @@ end
 @noinline function filter_tests(x, collection)
     @testset "filter test - $x, $(typeof(collection))" begin
         @test @inferred(filter(>(x), collection)) ==
-              filter(i -> i > x, collection) ==
-              filter(>(x), as_fixed(collection))
+              filter(i -> i > x, collection)
 
         @test @inferred(filter(>=(x), collection)) ==
-              filter(i -> i >= x, collection) ==
-              filter(>=(x), as_fixed(collection))
+              filter(i -> i >= x, collection)
 
         @test @inferred(filter(<(x), collection)) ==
-              filter(i -> i < x, collection) ==
-              filter(<(x), as_fixed(collection))
+              filter(i -> i < x, collection)
 
         @test @inferred(filter(<=(x), collection)) ==
-              filter(i -> i <= x, collection) ==
-              filter(<=(x), as_fixed(collection))
+              filter(i -> i <= x, collection)
 
         @test @inferred(filter(==(x), collection)) ==
-              filter(i -> i == x, collection) ==
-              filter(==(x), as_fixed(collection))
+              filter(i -> i == x, collection)
     end
 end
 
@@ -137,7 +140,7 @@ end
             # FIXME - filter AbstractLinRange doesn't come out as
             # expected because getindex results in inexact values
             # in both base and AbstractLinRange.
-            if !isa(collection, LinMRange)
+            if !isa(collection, LinRange)
                 filter_tests(x, collection)
             end
             count_tests(x, collection)

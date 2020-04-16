@@ -1,8 +1,11 @@
 module Finders
 
-using ChainedFixes, IntervalSets
+using ChainedFixes
+using IntervalSets
+using OffsetArrays
 
-using Base: OneTo, TwicePrecision
+using OffsetArrays: IdOffsetRange
+using Base: OneTo, TwicePrecision, step_hp
 
 export
     find_first,
@@ -40,5 +43,19 @@ include("find_lastlteq.jl")
 include("findall.jl")
 include("findlast.jl")
 include("findfirst.jl")
+
+for f in (:find_lasteq, :find_lastgt, :find_lastgteq, :find_lastlt, :find_lastlteq,
+          :find_firsteq, :find_firstgt, :find_firstgteq, :find_firstlt, :find_firstlteq)
+    @eval begin
+        function $f(x, r::IdOffsetRange)
+            idx = $f(x - r.offset, parent(r))
+            if idx isa Nothing
+                return idx
+            else
+                return idx + r.offset
+            end
+        end
+    end
+end
 
 end # module
